@@ -18,26 +18,31 @@ Route::get('/', function () {
     return Inertia::render('Index', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'allPosts' => Post::all(),
+        'allPosts' => Post::orderBy('datePosted', 'desc')->get(),
+
     ]);
 })->name('homePage');
 
 Route::get('/home', function () {
     return Inertia::render('Index', [
-        'allPosts' => Post::all(),
+        'allPosts' => Post::orderBy('datePosted', 'desc')->get(),
+
     ]);
-})->middleware(['auth', 'verified'])->name('home');
-Route::get('/patterns', function(){
-return Inertia::render('Patterns/PatternHome',[
-    'patterns' => Pattern::all()
+})->name('home');
+
+Route::get('/patterns', function(){ //'/patterns' name of the link that appears in the url
+return Inertia::render('Patterns/PatternHome',[ //renders the vue page in the patterns folder called patternhome.vue
+    'patterns' => Pattern::all() //the prop that is being passed to the webpage that is defined in the define props
 ]);
-})->name('Patterns');
+})->name('Patterns');//the name that you use in the <Link :href="route('Patterns')"> </Link> 
+//having a name is not necesary you could just use /patterns in the <Link>
+
 Route::get('/profile', function () {
     return Inertia::render('User/Profile', [
     'posts' =>Post::where('author','=', Auth::user()->id)->get(),
     'user' => Auth::user(),       
-    'comments' => Comment::where('author','=', value: Auth::user()->id)->get(),
-    'patterns' => Pattern::where('author','=', value: Auth::user()->id)->get(),
+    'comments' => Comment::where('author','=', value: Auth::user()->id)->orderBy('datePosted', 'desc')->get(),
+    'patterns' => Pattern::where('author','=', value: Auth::user()->id)->orderBy('datePosted', 'desc')->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('profile');
 
@@ -49,7 +54,9 @@ Route::get('/viewPost', function (Request $request) {
         'Posts/FullPost',
         [
             'post' => $post,
-           'comments' => Comment::all()->where('postID', '=', $request->post)->where('replyID', '=', 0)
+           'comments' => Comment::where('postID', '=', $request->post)
+            ->where('replyID', '=', 0)
+            ->orderBy('datePosted', 'desc')->get()
         ]
     );
 })->name('viewPost');

@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import CommentSection from "../Comments/CommentSection.vue";
 import NavBar from "../Navigation/NavBar.vue";
-import { useForm } from "@inertiajs/vue3";
+import { useForm, router } from "@inertiajs/vue3";
 import EditPostForm from "./EditPostForm.vue";
 import axios from "axios";
 
@@ -87,13 +87,23 @@ function likePost() {
 }
 function submit() {
     form.liked = postLiked.value;
-    form.disliked = postDisliked.value;
-    form.removelike = removedLike.value;
-    form.removedislike = removedDislike.value;
-    form.post(route("adjustLikes"));
-    removedLike.value = false;
-    removedDislike.value = false;
+     form.disliked = postDisliked.value;
+     form.removelike = removedLike.value;
+     form.removedislike = removedDislike.value;
+    axios
+        .post("adjustLikes", form, {})
+
+        .then((response) => {
+            console.log("likes adjusted");
+        })
+        .catch((error) => {
+            console.log(error.response);
+            console.log(error.message);
+        });
+        removedLike.value = false;
+     removedDislike.value = false;
 }
+
 
 const toggleEditPostForm = () => {
     editPostFormOpened.value = !editPostFormOpened.value;
@@ -179,7 +189,8 @@ function deletePost() {
 
                 <button
                     @click="imageShow"
-                    v-if="imageShowing == false"
+                    v-if="imageShowing == false "
+                    v-show="post.image !=null"
                     class="bg-transparent text-indigo-700 font-semibold py-2 px-4 border border-indigo-500 rounded"
                 >
                     Click to See Image

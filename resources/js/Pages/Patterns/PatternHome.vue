@@ -23,8 +23,10 @@ function filteredList() {
 }
 </script>
 
-<template>
-    <NavBar></NavBar>
+<template >
+        <div class="min-h-screen w-full bg-gray-100">
+
+    <NavBar ></NavBar>
     <div class="bg-gray-100">
         <div class="px-32">
             <div class="text-md mx-16 mb-3">
@@ -78,5 +80,6 @@ function filteredList() {
                 v-if="input.length == 0"
             ></PatternGroup>
         </div>
+    </div>
     </div>
 </template>
